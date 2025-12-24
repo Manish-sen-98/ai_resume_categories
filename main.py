@@ -8,6 +8,7 @@ from database import save_resume_data, resumes_collection
 from ai_service import analyze_resume
 from fastapi.concurrency import run_in_threadpool
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="AI Resume Sorter")
 
@@ -18,7 +19,13 @@ cloudinary.config(
   api_secret = os.getenv("CLOUDINARY_API_SECRET", "your_api_secret"),
   secure = True
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins (easiest for development)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 @app.post("/upload")
 async def upload_resumes(files: List[UploadFile] = File(...)):
     results = []
